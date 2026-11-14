@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eacd5d125337cc489cb6f0f84418046, type: 3}
+  m_Name: DummyCharacter
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  hp: 2
+  pressure: 2
+  spellbook:
+  - {fileID: 11400000, guid: fd74e2cfdb63d904c9d1ff6add643b18, type: 2}
+  activeSpells:
+  - {fileID: 11400000, guid: fd74e2cfdb63d904c9d1ff6add643b18, type: 2}
+  power: 2
+  will: 2
+  defense: 2
+  speed: 2
