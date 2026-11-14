@@ -8,7 +8,8 @@ public interface ICharacter
     void AddPressure(int result);
     void ChangeStats(Statistics stat);
     void RemovePressure(int result);
-
+    void InitFightStats();
+    FightManagerBehaviour FightManager { get; }
     Statistics FightStats { get; }
 }
 

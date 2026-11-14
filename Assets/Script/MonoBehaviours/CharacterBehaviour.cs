@@ -17,17 +17,38 @@ public class CharacterBehaviour : MonoBehaviour, ICharacter
     [SerializeField]
     protected CharacterData characterData;
     protected int currentHp;
+    protected int currentPressure;
+
+
+    private FightManagerBehaviour fightManager;
 
     public Statistics FightStats => fightStats;
+
+    // Récupère (et met en cache) le FightManager présent dans la scène
+    public FightManagerBehaviour FightManager
+    {
+        get
+        {
+            if (fightManager == null)
+                fightManager = FindAnyObjectByType<FightManagerBehaviour>();
+            return fightManager;
+        }
+    }
+
+    // Appelé par le FightManager au lancement du combat
+    public void InitFightStats()
+    {
+        fightStats = baseStats;
+    }
 
     public Team GetTeam()
     {
         return team;
     }
 
-    public Team SetTeam()
+    public void SetTeam(Team newTeam)
     {
-        return team;
+        team = newTeam;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -58,6 +79,7 @@ public class CharacterBehaviour : MonoBehaviour, ICharacter
         spellbook.AddRange(data.spellbook.ToArray());
         activeSpells.AddRange(data.activeSpells.ToArray());
         currentHp = data.hp;
+        currentPressure = 0;
     }
 
     public void TakeDamage(int result)
@@ -74,22 +96,52 @@ public class CharacterBehaviour : MonoBehaviour, ICharacter
 
     public void Heal(int result)
     {
-        throw new NotImplementedException();
+        // Les PV ne peuvent pas dépasser le maximum du combat en cours
+        currentHp = Mathf.Min(currentHp + result, fightStats.hp);
+        Debug.Log("Healed for " + result + ", HP: " + currentHp);
     }
 
     public void AddPressure(int result)
     {
-        throw new NotImplementedException();
+        currentPressure = Mathf.Min(currentPressure + result, fightStats.pressure);
+        Debug.Log("Pressure added: " + result + ", Pressure: " + currentPressure);
     }
 
+    // Applique les valeurs de stat comme des bonus/malus ajoutés aux stats de combat
     public void ChangeStats(Statistics stat)
     {
-        throw new NotImplementedException();
+        int previousMaxHp = fightStats.hp;
+
+        fightStats += stat;
+        ClampFightStats();
+
+        // currentHp augmente d'autant que le maximum augmente
+        int hpGain = fightStats.hp - previousMaxHp;
+        if (hpGain > 0)
+            currentHp += hpGain;
+
+        // currentHp ne peut pas dépasser le nouveau maximum
+        currentHp = Mathf.Min(currentHp, fightStats.hp);
+
+        // La pression ne peut pas dépasser son nouveau maximum
+        currentPressure = Mathf.Min(currentPressure, fightStats.pressure);
+    }
+
+    // Toutes les stats sont >= 0, sauf hp qui est >= 1
+    private void ClampFightStats()
+    {
+        fightStats.power = Mathf.Max(fightStats.power, 0);
+        fightStats.will = Mathf.Max(fightStats.will, 0);
+        fightStats.defense = Mathf.Max(fightStats.defense, 0);
+        fightStats.speed = Mathf.Max(fightStats.speed, 0);
+        fightStats.pressure = Mathf.Max(fightStats.pressure, 0);
+        fightStats.hp = Mathf.Max(fightStats.hp, 1);
     }
 
     public void RemovePressure(int result)
     {
-        throw new NotImplementedException();
+        currentPressure = Mathf.Max(currentPressure - result, 0);
+        Debug.Log("Pressure removed: " + result + ", Pressure: " + currentPressure);
     }
 }
 
@@ -130,6 +182,32 @@ public struct Statistics
         speed = data.speed;
         hp = data.hp;
         pressure = data.pressure;
+    }
+
+    public static Statistics operator +(Statistics a, Statistics b)
+    {
+        return new Statistics
+        {
+            power = a.power + b.power,
+            will = a.will + b.will,
+            defense = a.defense + b.defense,
+            speed = a.speed + b.speed,
+            hp = a.hp + b.hp,
+            pressure = a.pressure + b.pressure
+        };
+    }
+
+    public static Statistics operator -(Statistics a, Statistics b)
+    {
+        return new Statistics
+        {
+            power = a.power - b.power,
+            will = a.will - b.will,
+            defense = a.defense - b.defense,
+            speed = a.speed - b.speed,
+            hp = a.hp - b.hp,
+            pressure = a.pressure - b.pressure
+        };
     }
 
 }
