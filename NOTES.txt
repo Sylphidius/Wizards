@@ -1,0 +1,8 @@
+Voici ce qui reste ouvert, pour tes notes :
+
+potenty → potency : l’asset DummySpell contient encore potenty: 14. Corrige à la main ou ajoute [FormerlySerializedAs("potenty")].
+« Premier représentant » d’une équipe : l’ordre de CollectCharacters() n’est pas garanti, donc à trier si l’ordre compte.
+IsValidTarget utilise encore les équipes et pas la notion de camp (Ally et Player ensemble contre Enemy).
+Pas de coût en pression pour les sorts puissants, ni de tours basés sur speed dans le FightManager.
+
+Bonne nuit, et à bientôt pour la suite des sorts.

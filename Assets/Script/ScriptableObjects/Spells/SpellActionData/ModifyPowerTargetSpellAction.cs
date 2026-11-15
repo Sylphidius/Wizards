@@ -4,7 +4,7 @@ using UnityEngine;
 public class ModifyPowerTargetSpellAction: SpellActionData
 {
     public int potency;
-    public override void Act(ICharacter user, ICharacter target)
+    protected override void SpellAction(ICharacter user, ICharacter target)
     {
         int result = potency;
         Debug.Log("Damage Target for " + result);
